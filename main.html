@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Cirix</title>
+	<script src='https://code.jquery.com/jquery-3.2.1.js' integrity='sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=' crossorigin='anonymous'></script>
+
+	<style type="text/css">
+		select {
+			width: 200px;
+			height: 480px;
+		}
+	</style>
+</head>
+<body>
+
+CPU Cycle:<p id='cpu_cycle'></p>
+<select multiple id='new'></select>
+<select multiple id='ready'></select>
+<select multiple id='running'></select>
+<select multiple id='ready'></select>
+<select multiple id='io_waiting'></select>
+<select multiple id='io_using'></select>
+<input type='number' id='clock_speed'><br><br>
+<button onclick='pause()' id='pause'>Pause</button>
+
+
+<script type='text/javascript'>
+	window.onload = function() {
+		set_default_settings();
+		loop();
+	};
+
+	pause = function() {
+		state.paused = !state.paused;
+
+		if(state.paused) {
+			$('#pause').text('Start');
+		}
+		else {
+			$('#pause').text('Pause');
+			loop();
+		}
+	}
+
+	var state = {
+		cpu_cycle : 1,
+		process_count : 0,
+		paused : false,
+		lists : {
+			new : [],
+			ready : [],
+			running : [],
+			io_using : []
+		}
+	}
+
+	var default_settings = {
+		clock_speed : 1000
+	}
+
+	var current_settings = {
+		clock_speed : null
+	}
+
+	var ui_display = ['cpu_cycle'];
+
+	user_process = function(name, arrival_time, processor_use, io_use) {
+		this.name = name;
+		this.arrival_time = arrival_time;
+		this.processor_use, processor_remaining = processor_use;
+		this.io_use, io_remaining = io_use;
+	}
+
+	set_default_settings = function() {
+		for(let key in default_settings) {
+			$('#' + key).val(default_settings[key]);
+		}
+	}
+
+	refresh_settings = function() {
+		for(let key in current_settings) {
+			current_settings[key] = $('#' + key).val();
+		}
+
+		for(let key in ui_display) {
+			$('#' + ui_display[key]).text(state[ui_display[key]]);
+		}
+	}
+
+	randomly_generate_process = function() {
+		if(Math.floor(Math.random() * 100) + 1 < 90) {
+			let new_process = new user_process(get_name(), state.cpu_cycle, 10, 10);
+			state.lists.new.push(new_process);
+		}
+	}
+
+	refresh_lists = function() {
+		for(let key in state.lists) {
+			$('#' + key).empty();
+		}
+
+		for(let key in state.lists) {
+			for(let i in state.lists[key]) {
+				$('#' + key).append($('<option>', {
+					text: state.lists[key][i].name
+				}));
+			}
+		}
+	}
+
+	get_name = function(n) {
+		let output = state.cpu_cycle + '';
+		while(output.length < 3) {
+			output = '0' + output;
+		}
+
+		return 'PROC' + output;
+	}
+
+	loop = function() {
+		if(state.paused) {
+			return;
+		}
+
+		
+		refresh_settings();
+		
+		randomly_generate_process();
+
+
+
+		refresh_lists();
+		if(!state.paused) {
+			setTimeout(loop, current_settings.clock_speed, state.cpu_cycle++);
+		}
+	}
+</script>
+</body>
+</html>
