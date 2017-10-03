@@ -3,39 +3,70 @@
 <head>
 	<title>Cirix</title>
 	<script src='https://code.jquery.com/jquery-3.2.1.js' integrity='sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=' crossorigin='anonymous'></script>
-
-	<style type="text/css">
-		select {
-			width: 200px;
-			height: 280px;
-		}
-	</style>
+	<link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M' crossorigin='anonymous'>
 </head>
 <body>
+<div id='container'>
+	<div class='row'>
+	<div class='col-6'>
+		<table class='table'>
+			<thead class='thead-inverse'>
+				<tr>
+					<th>New</th>
+					<th>Ready</th>
+					<th>Running</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><select multiple id='new' class='form-control'></select></td>
+					<td><select multiple id='ready' class='form-control'></select></td>
+					<td><select multiple id='running' class='form-control'></select></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	</div>
 
-CPU Cycle:<div id='cpu_cycle'></div>
-Quantum:<div id='quantum'></div>
-New:<select multiple id='new'></select>
-Ready:<select multiple id='ready'></select>
-Running:<select multiple id='running'></select>
-Waiting I/O:<select multiple id='io_waiting'></select>
-Using I/O:<select multiple id='io_using'></select>
-Finished:<select multiple id='finished'></select>
-<input type='number' id='clock_speed'><br><br>
-<input type='number' id='luck'><br><br>
-<button onclick='pause()' id='pause'>Pause</button>
-<table id='pcb'>
-	<tr>
-		<th>Name</th>
-		<th>Arrival time</th>
-		<th>Processor want</th>
-		<th>Processor used</th>
-		<th>I/O trigger</th>
-		<th>I/O want</th>
-		<th>I/O used</th>
-	</tr>
-</table>
+	<div class='row'>
+	<div class='col-6'>
+		<table class='table'>
+			<thead class='thead-inverse'>
+				<tr>
+					<th width='33%'>Waiting for I/O</th>
+					<th width='33%'>Using I/O</th>
+					<th width='33%'>Finished</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><select multiple id='io_waiting' class='form-control'></select></td>
+					<td><select multiple id='io_using' class='form-control'></select></td>
+					<td><select multiple id='finished' class='form-control'></select></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	</div>
 
+	CPU Cycle:<div id='cpu_cycle'></div>
+	Quantum:<div id='quantum'></div>
+	<input type='number' id='clock_speed'><br><br>
+	<input type='number' id='luck'><br><br>
+	<button onclick='pause()' id='pause'>Start</button>
+	<button onclick='reset()' id='reset'>Reset</button>
+	<table id='pcb'>
+		<tr>
+			<th>Name</th>
+			<th>Arrival time</th>
+			<th>Processor want</th>
+			<th>Processor used</th>
+			<th>I/O trigger</th>
+			<th>I/O want</th>
+			<th>I/O used</th>
+		</tr>
+	</table>
+</div>
 <script type='text/javascript'>
 	window.onload = function() {
 		set_default_settings();
@@ -58,7 +89,7 @@ Finished:<select multiple id='finished'></select>
 		cpu_cycle : 1,
 		quantum : 1,
 		process_count : 0,
-		paused : false,
+		paused : true,
 		lists : {
 			new : [],
 			ready : [],
@@ -70,9 +101,9 @@ Finished:<select multiple id='finished'></select>
 	}
 
 	var default_settings = {
-		clock_speed : 1000,
+		clock_speed : 200,
 		quantum : 6,
-		luck : 50
+		luck : 100
 	}
 
 	var current_settings = {
@@ -137,11 +168,15 @@ Finished:<select multiple id='finished'></select>
 		}
 
 		pcb.sort(function(a, b) {
-			  if (a.name < b.name)
-			    return -1;
-			  if (a.name > b.name)
-			    return 1;
-			  return 0;
+			if(a.name < b.name) {
+				return -1;
+			}
+			
+			if(a.name > b.name) {
+				return 1;
+			}
+
+			return 0;
 		});
 
 		for(let i in pcb) {
@@ -167,7 +202,7 @@ Finished:<select multiple id='finished'></select>
 		}
 
 		if(state.lists.io_using.length != 0) {
-			if(state.lists.io_using[0] < state.lists.io_using[0].io_want){
+			if(state.lists.io_using[0].io_used < state.lists.io_using[0].io_want) {
 				state.lists.io_using[0].io_used++;
 			}
 		}
@@ -179,6 +214,7 @@ Finished:<select multiple id='finished'></select>
 		}
 
 		if(state.lists[target].length != 0) {
+			console.log('Moved ' + state.lists[target][0].name + ' from ' + target + ' to ' + destination);
 			state.lists[destination].push(state.lists[target].shift());
 		}
 	}
@@ -189,6 +225,7 @@ Finished:<select multiple id='finished'></select>
 		}
 
 		while(state.lists[target].length != 0) {
+			console.log('Moved ' + state.lists[target][0].name + ' from ' + target + ' to ' + destination);
 			state.lists[destination].push(state.lists[target].shift());
 		}
 	}
@@ -203,21 +240,46 @@ Finished:<select multiple id='finished'></select>
 
 			if(running_process.io_trigger == running_process.processor_used) {
 				move('running', 'io_waiting');
-				move('ready', 'running');
 			}
 		}
 
 		move('running', 'ready');
-		move('ready', 'running');
+		move('ready', 'running', true);
+
+		if(state.lists.io_using.length != 0) {
+			let io_process = state.lists.io_using[0];
+
+			if(io_process.io_used == io_process.io_want) {
+				if(io_process.processor_used == io_process.processor_want) {
+					move('io_using', 'finished');
+				}
+				else {
+					move('io_using', 'ready');
+				}
+			}
+		}
+
+		move('io_waiting', 'io_using', true);
+		move('ready', 'running', true);
+	}
+
+	reset = function() {
+		location.reload();
 	}
 
 	forward = function() {
 		if(state.lists.running.length != 0) {
-			state.lists.running[0].processor_used++;
+			let running_process = state.lists.running[0];
+			running_process.processor_used++;
 
-			if(state.lists.running[0].processor_used == state.lists.running[0].processor_want) {
+			if(running_process.processor_used == running_process.processor_want) {
 				state.quantum = -1;
 			}
+
+			if(running_process.io_trigger == running_process.processor_used) {
+				state.quantum = -1;
+			}
+
 		}
 	}
 
