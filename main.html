@@ -4,11 +4,20 @@
 	<title>Cirix</title>
 	<script src='https://code.jquery.com/jquery-3.2.1.js' integrity='sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=' crossorigin='anonymous'></script>
 	<link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M' crossorigin='anonymous'>
+	<style type="text/css">
+		table {
+			table-layout: fixed;
+		}
+
+		th, td {
+			text-align: center;
+		}
+	</style>
 </head>
 <body>
-<div id='container'>
+<div class='container'>
 	<div class='row'>
-	<div class='col-6'>
+	<div class='col-9'>
 		<table class='table'>
 			<thead class='thead-inverse'>
 				<tr>
@@ -24,18 +33,11 @@
 					<td><select multiple id='running' class='form-control'></select></td>
 				</tr>
 			</tbody>
-		</table>
-	</div>
-	</div>
-
-	<div class='row'>
-	<div class='col-6'>
-		<table class='table'>
 			<thead class='thead-inverse'>
 				<tr>
-					<th width='33%'>Waiting for I/O</th>
-					<th width='33%'>Using I/O</th>
-					<th width='33%'>Finished</th>
+					<th>Waiting for I/O</th>
+					<th>Using I/O</th>
+					<th>Finished</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -47,27 +49,42 @@
 			</tbody>
 		</table>
 	</div>
+
+	<div class='col-2'>
+		CPU Cycle:<div id='cpu_cycle'>0</div>
+		Quantum:<div id='quantum'>0</div>
+		<input type='number' id='clock_speed'><br><br>
+		<input type='number' id='luck'><br><br>
+		<button onclick='pause()' id='pause'>Start</button>
+		<button onclick='reset()' id='reset'>Reset</button>
+	</div>
 	</div>
 
-	CPU Cycle:<div id='cpu_cycle'></div>
-	Quantum:<div id='quantum'></div>
-	<input type='number' id='clock_speed'><br><br>
-	<input type='number' id='luck'><br><br>
-	<button onclick='pause()' id='pause'>Start</button>
-	<button onclick='reset()' id='reset'>Reset</button>
-	<table id='pcb'>
-		<tr>
-			<th>Name</th>
-			<th>Arrival time</th>
-			<th>Processor want</th>
-			<th>Processor used</th>
-			<th>I/O trigger</th>
-			<th>I/O want</th>
-			<th>I/O used</th>
-		</tr>
-	</table>
+	<div class='row'>
+	<div class='col-9'>
+		<table class='table'>
+			<thead class='thead-inverse'>
+				<tr>
+					<th>Name</th>
+					<th>Arrival</th>
+					<th>CPU want</th>
+					<th>CPU used</th>
+					<th>I/O trigger</th>
+					<th>I/O want</th>
+					<th>I/O used</th>
+					<th>System time</th>
+				</tr>
+			</thead>
+			<tbody id='pcb'>
+			</tbody>
+		</table>
+	</div>
+	</div>
+
 </div>
+
 <script type='text/javascript'>
+
 	window.onload = function() {
 		set_default_settings();
 		loop();
@@ -150,9 +167,8 @@
 
 	refresh_lists = function() {
 		let pcb = [];
-
 		$('#pcb').empty();
-		$('#pcb').append('<tr><th>Name</th><th>Arrival time</th><th>Processor want</th><th>Processor used</th><th>I/O trigger</th><th>I/O want</th><th>I/O used</th></tr>')
+
 		for(let key in state.lists) {
 			$('#' + key).empty();
 		}
@@ -160,7 +176,7 @@
 		for(let key in state.lists) {
 			for(let i in state.lists[key]) {
 				$('#' + key).append($('<option>', {
-					text: state.lists[key][i].name + ' ' + state.lists[key][i].processor_used + '   ' + state.lists[key][i].io_used
+					text: state.lists[key][i].name
 				}));
 
 				pcb.push(state.lists[key][i]);
@@ -180,7 +196,7 @@
 		});
 
 		for(let i in pcb) {
-			$('#pcb').append('<tr><th>' + pcb[i].name + '</th><th>' + pcb[i].arrival_time + '</th><th>' + pcb[i].processor_want + '</th><th>' + pcb[i].processor_used + '</th><th>' + pcb[i].io_trigger + '</th><th>' + pcb[i].io_want + '</th><th>' + pcb[i].io_used + '</th></tr>');
+			$('#pcb').append('<tr><td>' + pcb[i].name + '</td><td>' + pcb[i].arrival_time + '</td><td>' + pcb[i].processor_want + '</td><td>' + pcb[i].processor_used + '</td><td>' + pcb[i].io_trigger + '</td><td>' + pcb[i].io_want + '</td><td>' + pcb[i].io_used + '</td><td>0</td></tr>');
 		}
 	}
 
@@ -214,7 +230,6 @@
 		}
 
 		if(state.lists[target].length != 0) {
-			console.log('Moved ' + state.lists[target][0].name + ' from ' + target + ' to ' + destination);
 			state.lists[destination].push(state.lists[target].shift());
 		}
 	}
@@ -225,7 +240,6 @@
 		}
 
 		while(state.lists[target].length != 0) {
-			console.log('Moved ' + state.lists[target][0].name + ' from ' + target + ' to ' + destination);
 			state.lists[destination].push(state.lists[target].shift());
 		}
 	}
