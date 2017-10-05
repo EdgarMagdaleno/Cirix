@@ -11,7 +11,7 @@
 
 		select[multiple] {
 			text-align: center;
-			background: #212529;
+			background: #353433;
 			border: none;
 			border-radius: 0px 0px 25px 25px;
 			color: white;
@@ -19,21 +19,18 @@
 
 		th, td {
 			text-align: center;
-			background: #212529;
 			color: white;
 		}
 
 		.table {
-			border-bottom:0px !important;
+			margin: 0px;
+		
 		}
 
 		.table th, .table td {
-			padding: 5px;
+			padding: 0px;
 		    border: 0px !important;
-		}
-
-		.fixed-table-container {
-		    border :0px !important;
+		    background: #353433;
 		}
 
 		.rounded th {
@@ -45,7 +42,7 @@
 		}
 
 		.form-control {
-			margin-bottom: 0px;
+			margin: 0px;
 		}
 	</style>
 </head>
@@ -100,14 +97,14 @@
 		<table class='table borderless'>
 			<thead class='thead-inverse'>
 				<tr>
-					<th>Name</th>
+					<th style='border-top-left-radius: 25px'>Name</th>
 					<th>Arrival</th>
 					<th>CPU want</th>
 					<th>CPU used</th>
 					<th>I/O trigger</th>
 					<th>I/O want</th>
 					<th>I/O used</th>
-					<th>System time</th>
+					<th style='border-top-right-radius: 25px'>System time</th>
 				</tr>
 			</thead>
 			<tbody id='pcb'>
