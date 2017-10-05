@@ -9,8 +9,43 @@
 			table-layout: fixed;
 		}
 
+		select[multiple] {
+			text-align: center;
+			background: #212529;
+			border: none;
+			border-radius: 0px 0px 25px 25px;
+			color: white;
+		}
+
 		th, td {
 			text-align: center;
+			background: #212529;
+			color: white;
+		}
+
+		.table {
+			border-bottom:0px !important;
+		}
+
+		.table th, .table td {
+			padding: 5px;
+		    border: 0px !important;
+		}
+
+		.fixed-table-container {
+		    border :0px !important;
+		}
+
+		.rounded th {
+			border-radius: 25px 25px 0px 0px;
+		}
+
+		.rounded td {
+			border-radius: 0px 0px 25px 25px;
+		}
+
+		.form-control {
+			margin-bottom: 0px;
 		}
 	</style>
 </head>
@@ -18,7 +53,7 @@
 <div class='container'>
 	<div class='row'>
 	<div class='col-9'>
-		<table class='table'>
+		<table class='table borderless rounded'>
 			<thead class='thead-inverse'>
 				<tr>
 					<th>New</th>
@@ -62,7 +97,7 @@
 
 	<div class='row'>
 	<div class='col-9'>
-		<table class='table'>
+		<table class='table borderless'>
 			<thead class='thead-inverse'>
 				<tr>
 					<th>Name</th>
