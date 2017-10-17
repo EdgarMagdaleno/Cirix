@@ -2,8 +2,8 @@
 <html>
 <head>
 	<title>Cirix</title>
-	<script src='https://code.jquery.com/jquery-3.2.1.js' integrity='sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=' crossorigin='anonymous'></script>
-	<link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M' crossorigin='anonymous'>
+	<script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="bootstrap.css">
 	<style type="text/css">
 		table {
 			table-layout: fixed;
@@ -13,8 +13,35 @@
 			text-align: center;
 			background: #353433;
 			border: none;
-			border-radius: 0px 0px 25px 25px;
 			color: white;
+			height: 200px;
+		}
+
+		.nopadding {
+			padding: 0px !important;
+			margin: 0px !important;
+		}
+
+		select[multiple]:focus {
+			background-color: transparent;
+		}
+
+		/* Let's get this party started */
+		select::-webkit-scrollbar {
+		    width: 5px;
+		}
+		 
+		/* Handle */
+		select::-webkit-scrollbar-thumb {
+		    background: white;
+		}
+
+		select::-webkit-scrollbar-thumb:window-inactive {
+			background: white;
+		}
+
+		input[type=range] {
+			width: 100%;
 		}
 
 		th, td {
@@ -24,7 +51,6 @@
 
 		.table {
 			margin: 0px;
-		
 		}
 
 		.table th, .table td {
@@ -33,12 +59,16 @@
 		    background: #353433;
 		}
 
-		.rounded th {
-			border-radius: 25px 25px 0px 0px;
+		.table td {
+			border-bottom: 25px solid transparent;
 		}
 
-		.rounded td {
-			border-radius: 0px 0px 25px 25px;
+		.roundedd th {
+			border-radius: 5px 5px 0px 0px;
+		}
+
+		.roundedd td {
+			border-radius: 0px 0px 5px 5px;
 		}
 
 		.form-control {
@@ -46,12 +76,11 @@
 		}
 	</style>
 </head>
-<body>
-<div class='container'>
-	<div class='row'>
-	<div class='col-9'>
-		<table class='table borderless rounded'>
-			<thead class='thead-inverse'>
+<body style="margin-top: 10px;">
+<div class="container">
+	<div class="col-9 float-left" style="margin: 0 !important; padding-right: 10px">
+		<table class="table borderless rounded">
+			<thead class="thead-inverse">
 				<tr>
 					<th>New</th>
 					<th>Ready</th>
@@ -60,12 +89,12 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td><select multiple id='new' class='form-control'></select></td>
-					<td><select multiple id='ready' class='form-control'></select></td>
-					<td><select multiple id='running' class='form-control'></select></td>
+					<td><select multiple id="new" class="form-control"></select></td>
+					<td><select multiple id="ready" class="form-control"></select></td>
+					<td><select multiple id="running" class="form-control"></select></td>
 				</tr>
 			</tbody>
-			<thead class='thead-inverse'>
+			<thead class="thead-inverse">
 				<tr>
 					<th>Waiting for I/O</th>
 					<th>Using I/O</th>
@@ -74,69 +103,70 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td><select multiple id='io_waiting' class='form-control'></select></td>
-					<td><select multiple id='io_using' class='form-control'></select></td>
-					<td><select multiple id='finished' class='form-control'></select></td>
+					<td><select multiple id="io_waiting" class="form-control"></select></td>
+					<td><select multiple id="io_using" class="form-control"></select></td>
+					<td><select multiple id="finished" class="form-control"></select></td>
 				</tr>
 			</tbody>
 		</table>
-	</div>
 
-	<div class='col-2'>
-		CPU Cycle:<div id='cpu_cycle'>0</div>
-		Quantum:<div id='quantum'>0</div>
-		<input type='number' id='clock_speed'><br><br>
-		<input type='number' id='luck'><br><br>
-		<button onclick='pause()' id='pause'>Start</button>
-		<button onclick='reset()' id='reset'>Reset</button>
-	</div>
-	</div>
-
-	<div class='row'>
-	<div class='col-9'>
-		<table class='table borderless'>
-			<thead class='thead-inverse'>
+		<table class="table borderless" style="margin-top: 10px">
+			<thead class="thead-inverse">
 				<tr>
-					<th style='border-top-left-radius: 25px'>Name</th>
+					<th style="border-top-left-radius: 0px">Name</th>
 					<th>Arrival</th>
 					<th>CPU want</th>
 					<th>CPU used</th>
 					<th>I/O trigger</th>
 					<th>I/O want</th>
 					<th>I/O used</th>
-					<th style='border-top-right-radius: 25px'>System time</th>
+					<th style="border-top-right-radius: 0px">System time</th>
 				</tr>
 			</thead>
-			<tbody id='pcb'>
+			<tbody id="pcb">
 			</tbody>
 		</table>
 	</div>
-	</div>
 
+	<div class="col-3 float-right" style="background: #353433; color: white; padding: 10px">
+		CPU Cycle:<div id="cpu_cycle" style="float: right">0</div><br>
+		Quantum:<div id="quantum_state" style="float: right">0</div><br>
+		Delay<div id="delay" style="float: right">1000</div><input type="range" min="0" max="2000" value="1000" step="1" oninput="update(this, 'delay')">
+		Luck<div id="luck" style="float: right">20</div><input type="range" min="0" max="100" value="20" step="1" oninput="update(this, 'luck')">
+		Quantum<div id="quantum_settings" style="float: right">20</div><input type="range" min="1" max="32" value="6" step="1" oninput="update(this, 'quantum_settings')">
+		CPU time<div id="cpu_time_average" style="float: right">20</div><input type="range" min="0" max="100" value="1" step="1" oninput="update(this, 'cpu_time_average')">
+		<button onclick="pause()" id="pause">Start</button>
+		<button onclick="reset()" id="reset">Reset</button>
+	</div>
 </div>
 
-<script type='text/javascript'>
+<script type="text/javascript">
 
 	window.onload = function() {
 		set_default_settings();
 		loop();
 	};
 
+	update = function(change, element) {
+		console.log(change.name);
+		$("#" + element).text(change.value);
+	}
+
 	pause = function() {
 		state.paused = !state.paused;
 
 		if(state.paused) {
-			$('#pause').text('Start');
+			$("#pause").text("Start");
 		}
 		else {
-			$('#pause').text('Pause');
+			$("#pause").text("Pause");
 			loop();
 		}
 	}
 
 	var state = {
 		cpu_cycle : 1,
-		quantum : 1,
+		quantum_state : 1,
 		process_count : 0,
 		paused : true,
 		lists : {
@@ -146,22 +176,22 @@
 			io_using : [],
 			io_waiting : [],
 			finished : []
+		},
+		settings : {
+			delay : null,
+			quantum_settings : null,
+			luck : null
 		}
 	}
 
 	var default_settings = {
-		clock_speed : 200,
-		quantum : 6,
-		luck : 100
+		delay : 500,
+		quantum_settings : 6,
+		luck : 20
 	}
 
-	var current_settings = {
-		clock_speed : null,
-		quantum : null,
-		luck : null
-	}
-
-	var ui_display = ['cpu_cycle', 'quantum', 'luck'];
+	var ui_display_state = ["cpu_cycle", "quantum_state"];
+	var ui_display_settings = ["luck", "delay", "quantum_settings"];
 
 	user_process = function(name, arrival_time, processor_want, io_want, io_trigger) {
 		this.name = name;
@@ -175,23 +205,31 @@
 
 	set_default_settings = function() {
 		for(let key in default_settings) {
-			$('#' + key).val(default_settings[key]);
+			$("#" + key).text(default_settings[key]);
+		}
+
+		for(let key in state.settings) {
+			state.settings[key] = $("#" + key).text();
 		}
 	}
 
 	read_settings = function() {
-		for(let key in current_settings) {
-			current_settings[key] = $('#' + key).val();
+		for(let key in state.settings) {
+			state.settings[key] = $("#" + key).text();
 		}
 
-		for(let key in ui_display) {
-			$('#' + ui_display[key]).text(state[ui_display[key]]);
+		for(let key in ui_display_state) {
+			$("#" + ui_display_state[key]).text(state[ui_display_state[key]]);
 		}
 	}
 
+	random_cpu_time = function() {
+		
+	}
+
 	randomly_generate_process = function() {
-		if(Math.floor(Math.random() * 100) + 1 < current_settings.luck) {
-			let new_process = new user_process(get_name(), state.cpu_cycle, 10, 10, 2);
+		if(Math.floor(Math.random() * 100) + 1 < state.settings.luck) {
+			let new_process = new user_process(get_name(), state.cpu_cycle, random_cpu_time(), 10, 2);
 			state.lists.new.push(new_process);
 			state.process_count++;
 		}
@@ -199,15 +237,15 @@
 
 	refresh_lists = function() {
 		let pcb = [];
-		$('#pcb').empty();
+		$("#pcb").empty();
 
 		for(let key in state.lists) {
-			$('#' + key).empty();
+			$("#" + key).empty();
 		}
 
 		for(let key in state.lists) {
 			for(let i in state.lists[key]) {
-				$('#' + key).append($('<option>', {
+				$("#" + key).append($("<option>", {
 					text: state.lists[key][i].name
 				}));
 
@@ -228,25 +266,25 @@
 		});
 
 		for(let i in pcb) {
-			$('#pcb').append('<tr><td>' + pcb[i].name + '</td><td>' + pcb[i].arrival_time + '</td><td>' + pcb[i].processor_want + '</td><td>' + pcb[i].processor_used + '</td><td>' + pcb[i].io_trigger + '</td><td>' + pcb[i].io_want + '</td><td>' + pcb[i].io_used + '</td><td>0</td></tr>');
+			$("#pcb").append("<tr><td>" + pcb[i].name + "</td><td>" + pcb[i].arrival_time + "</td><td>" + pcb[i].processor_want + "</td><td>" + pcb[i].processor_used + "</td><td>" + pcb[i].io_trigger + "</td><td>" + pcb[i].io_want + "</td><td>" + pcb[i].io_used + "</td><td>0</td></tr>");
 		}
 	}
 
 	get_name = function(n) {
-		let output = state.process_count + '';
+		let output = state.process_count + "";
 		while(output.length < 3) {
-			output = '0' + output;
+			output = "0" + output;
 		}
 
-		return 'PROC' + output;
+		return "PROC" + output;
 	}
 
 	tick = function() {
 		state.cpu_cycle++
 
-		state.quantum++;
-		if(state.quantum > current_settings.quantum) {
-			state.quantum = 0;
+		state.quantum_state++;
+		if(state.quantum_state > state.settings.quantum_settings) {
+			state.quantum_state = 0;
 		}
 
 		if(state.lists.io_using.length != 0) {
@@ -277,36 +315,36 @@
 	}
 
 	interrupt = function() {
-		move_exhaust('new', 'ready');
+		move_exhaust("new", "ready");
 		if(state.lists.running.length != 0) {
 			let running_process = state.lists.running[0];
 			if(running_process.processor_used == running_process.processor_want) {
-				move('running', 'finished');
+				move("running", "finished");
 			}
 
 			if(running_process.io_trigger == running_process.processor_used) {
-				move('running', 'io_waiting');
+				move("running", "io_waiting");
 			}
 		}
 
-		move('running', 'ready');
-		move('ready', 'running', true);
+		move("running", "ready");
+		move("ready", "running", true);
 
 		if(state.lists.io_using.length != 0) {
 			let io_process = state.lists.io_using[0];
 
 			if(io_process.io_used == io_process.io_want) {
 				if(io_process.processor_used == io_process.processor_want) {
-					move('io_using', 'finished');
+					move("io_using", "finished");
 				}
 				else {
-					move('io_using', 'ready');
+					move("io_using", "ready");
 				}
 			}
 		}
 
-		move('io_waiting', 'io_using', true);
-		move('ready', 'running', true);
+		move("io_waiting", "io_using", true);
+		move("ready", "running", true);
 	}
 
 	reset = function() {
@@ -319,18 +357,18 @@
 			running_process.processor_used++;
 
 			if(running_process.processor_used == running_process.processor_want) {
-				state.quantum = -1;
+				state.quantum_state = -1;
 			}
 
 			if(running_process.io_trigger == running_process.processor_used) {
-				state.quantum = -1;
+				state.quantum_state = -1;
 			}
 
 		}
 	}
 
 	handle = function() {
-		if(state.quantum == 0) {
+		if(state.quantum_state == 0) {
 			interrupt();
 		}
 		else {
@@ -343,6 +381,7 @@
 			return;
 		}
 
+		console.log(JSON.stringify(state, null, 4));
 		read_settings();
 		randomly_generate_process();
 		handle();
@@ -350,7 +389,7 @@
 
 		tick();
 		if(!state.paused) {
-			setTimeout(loop, current_settings.clock_speed);
+			setTimeout(loop, state.settings.delay);
 		}
 	}
 </script>
