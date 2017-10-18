@@ -14,129 +14,94 @@
 			background: #353433;
 			border: none;
 			color: white;
-			height: 200px;
+			height: 300px;
 		}
 
-		.nopadding {
+		.table {
+			border: 0px !important;
+		}
+
+		.separated_cells {
+			border-collapse: separate;
+			border-spacing: 10px;
+			margin-bottom: 0 !important;
+		}
+
+		.table th, .table td {
+			text-align: center;
+			color: white;
 			padding: 0px !important;
-			margin: 0px !important;
+			border: 0px !important;
+			background: #353433;
 		}
 
 		select[multiple]:focus {
 			background-color: transparent;
 		}
 
-		/* Let's get this party started */
 		select::-webkit-scrollbar {
 		    width: 5px;
 		}
 		 
-		/* Handle */
 		select::-webkit-scrollbar-thumb {
 		    background: white;
-		}
-
-		select::-webkit-scrollbar-thumb:window-inactive {
-			background: white;
 		}
 
 		input[type=range] {
 			width: 100%;
 		}
-
-		th, td {
-			text-align: center;
-			color: white;
-		}
-
-		.table {
-			margin: 0px;
-		}
-
-		.table th, .table td {
-			padding: 0px;
-		    border: 0px !important;
-		    background: #353433;
-		}
-
-		.table td {
-			border-bottom: 25px solid transparent;
-		}
-
-		.roundedd th {
-			border-radius: 5px 5px 0px 0px;
-		}
-
-		.roundedd td {
-			border-radius: 0px 0px 5px 5px;
-		}
-
-		.form-control {
-			margin: 0px;
-		}
 	</style>
 </head>
-<body style="margin-top: 10px;">
+<body>
 <div class="container">
-	<div class="col-9 float-left" style="margin: 0 !important; padding-right: 10px">
-		<table class="table borderless rounded">
-			<thead class="thead-inverse">
-				<tr>
-					<th>New</th>
-					<th>Ready</th>
-					<th>Running</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><select multiple id="new" class="form-control"></select></td>
-					<td><select multiple id="ready" class="form-control"></select></td>
-					<td><select multiple id="running" class="form-control"></select></td>
-				</tr>
-			</tbody>
-			<thead class="thead-inverse">
-				<tr>
-					<th>Waiting for I/O</th>
-					<th>Using I/O</th>
-					<th>Finished</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><select multiple id="io_waiting" class="form-control"></select></td>
-					<td><select multiple id="io_using" class="form-control"></select></td>
-					<td><select multiple id="finished" class="form-control"></select></td>
-				</tr>
-			</tbody>
+	<div class="col-9 float-left" style="padding: 0 !important">
+		<table class="table borderless separated_cells">
+			<tr>
+				<td><center>New</center><select multiple id="new" class="form-control"></select></td>
+				<td><center>Ready</center><select multiple id="ready" class="form-control"></select></td>
+				<td><center>Running</center><select multiple id="running" class="form-control"></select></td>
+			</tr>
+			<tr>
+				<td><center>Waiting I/O</center><select multiple id="io_waiting" class="form-control"></select></td>
+				<td><center>Using I/O</center><select multiple id="io_using" class="form-control"></select></td>
+				<td><center>Finished</center><select multiple id="finished" class="form-control"></select></td>
+			</tr>
 		</table>
+	</div>
 
-		<table class="table borderless" style="margin-top: 10px">
+	<div class="col-3 float-right" style="background: #353433; color: white; padding: 10px; margin-top: 10px; height: 658px">
+		CPU Cycle:<div id="cpu_cycle" style="float: right">0</div><br>
+		Quantum:<div id="quantum_state" style="float: right">0</div><br>
+		Delay<div id="delay" style="float: right">1000</div><input type="range" min="0" max="2000" value="1000" step="1" oninput="update(this, 'delay')">
+		Luck<div id="luck" style="float: right">20</div><input type="range" min="0" max="100" value="20" step="1" oninput="update(this, 'luck')">
+		Quantum<div id="quantum_settings" style="float: right">20</div><input type="range" min="1" max="32" value="6" step="1" oninput="update(this, 'quantum_settings')">
+		CPU time<div id="cpu_time_average" style="float: right">15</div><input type="range" min="5" max="100" value="15" step="1" oninput="update(this, 'cpu_time_average'); change_io_time_slider(this);">
+		I/O time<div id="io_time_average" style="float: right">10</div><input type="range" min="5" max="20" value="10" step="1" oninput="update(this, 'io_time_average')">
+		I/O Trigger<div id="io_trigger_average" style="float: right">7</div><input id="io_trigger_slider" type="range" min="5" max="15" value="7" step="1" oninput="update(this, 'io_trigger_average')">
+		New limit<div id="new_limit" style="float: right">50</div><input type="range" min="1" max="100" value="50" step="1" oninput="update(this, 'new_limit')">
+		Ready limit<div id="ready_limit" style="float: right">50</div><input type="range" min="1" max="100" value="50" step="1" oninput="update(this, 'ready_limit')">
+		Waiting I/O limit<div id="io_waiting_limit" style="float: right">50</div><input type="range" min="1" max="100" value="50" step="1" oninput="update(this, 'io_waiting_limit')">
+		<button onclick="pause()" id="pause">Start</button>
+		<button onclick="reset()" id="reset">Reset</button>
+	</div>
+
+	<div class="col-12 float-left" style="padding: 5px; margin-left: 5px; padding-top: 0 !important">
+		<table class="table borderless merged_cells">
 			<thead class="thead-inverse">
 				<tr>
-					<th style="border-top-left-radius: 0px">Name</th>
+					<th>Name</th>
 					<th>Arrival</th>
 					<th>CPU want</th>
 					<th>CPU used</th>
 					<th>I/O trigger</th>
 					<th>I/O want</th>
 					<th>I/O used</th>
-					<th style="border-top-right-radius: 0px">System time</th>
+					<th>System time</th>
 				</tr>
 			</thead>
 			<tbody id="pcb">
 			</tbody>
 		</table>
-	</div>
-
-	<div class="col-3 float-right" style="background: #353433; color: white; padding: 10px">
-		CPU Cycle:<div id="cpu_cycle" style="float: right">0</div><br>
-		Quantum:<div id="quantum_state" style="float: right">0</div><br>
-		Delay<div id="delay" style="float: right">1000</div><input type="range" min="0" max="2000" value="1000" step="1" oninput="update(this, 'delay')">
-		Luck<div id="luck" style="float: right">20</div><input type="range" min="0" max="100" value="20" step="1" oninput="update(this, 'luck')">
-		Quantum<div id="quantum_settings" style="float: right">20</div><input type="range" min="1" max="32" value="6" step="1" oninput="update(this, 'quantum_settings')">
-		CPU time<div id="cpu_time_average" style="float: right">20</div><input type="range" min="0" max="100" value="1" step="1" oninput="update(this, 'cpu_time_average')">
-		<button onclick="pause()" id="pause">Start</button>
-		<button onclick="reset()" id="reset">Reset</button>
 	</div>
 </div>
 
@@ -147,8 +112,14 @@
 		loop();
 	};
 
+	change_io_time_slider = function(change) {
+		$("#io_trigger_slider").attr('max', Number(change.value));
+		if(Number(change.value) < $("#io_trigger_average").text()) {
+			update(change, "io_trigger_average");
+		}
+	}
+
 	update = function(change, element) {
-		console.log(change.name);
 		$("#" + element).text(change.value);
 	}
 
@@ -180,19 +151,30 @@
 		settings : {
 			delay : null,
 			quantum_settings : null,
-			luck : null
+			luck : null,
+			cpu_time_average : null,
+			io_trigger_average : null,
+			io_time_average : null,
+			new_limit : null,
+			ready_limit : null,
+			io_waiting_limit : null
 		}
 	}
 
 	var default_settings = {
 		delay : 500,
 		quantum_settings : 6,
-		luck : 20
+		luck : 20,
+		cpu_time_average : 15,
+		io_trigger_average : 7,
+		io_time_average : 10,
+		new_limit : 50,
+		ready_limit : 50,
+		io_waiting_limit : 50
 	}
 
 	var ui_display_state = ["cpu_cycle", "quantum_state"];
-	var ui_display_settings = ["luck", "delay", "quantum_settings"];
-
+	
 	user_process = function(name, arrival_time, processor_want, io_want, io_trigger) {
 		this.name = name;
 		this.arrival_time = arrival_time;
@@ -201,6 +183,7 @@
 		this.io_want = io_want;
 		this.io_used = 0;
 		this.io_trigger = io_trigger;
+		this.system_time = 0;
 	}
 
 	set_default_settings = function() {
@@ -224,12 +207,32 @@
 	}
 
 	random_cpu_time = function() {
-		
+		let time = Number(state.settings.cpu_time_average) + (Math.random() * 10) - 5;
+		return Math.floor(time);
+	}
+
+	random_io_time = function() {
+		let time = Number(state.settings.io_time_average) + (Math.random() * 10) - 5;
+		return Math.floor(time);
+	}
+
+	random_io_trigger = function() {
+		let time = Number(state.settings.io_trigger_average) + (Math.random() * 10) - 5;
+		return Math.floor(time);
 	}
 
 	randomly_generate_process = function() {
+		if(state.lists.new.length == state.settings.new_limit) {
+			return;
+		}
+
 		if(Math.floor(Math.random() * 100) + 1 < state.settings.luck) {
-			let new_process = new user_process(get_name(), state.cpu_cycle, random_cpu_time(), 10, 2);
+			let new_process = new user_process(get_name(), state.cpu_cycle, random_cpu_time(), random_io_time(), random_io_trigger());
+			if(Number(new_process.io_trigger) == 0 || Number(new_process.io_time) == 0) {
+				new_process.io_trigger = '-';
+				new_process.io_want = '-';
+				new_process.io_used = '-';
+			}
 			state.lists.new.push(new_process);
 			state.process_count++;
 		}
@@ -248,7 +251,7 @@
 				$("#" + key).append($("<option>", {
 					text: state.lists[key][i].name
 				}));
-
+				state.lists[key][i].system_time++;
 				pcb.push(state.lists[key][i]);
 			}
 		}
@@ -266,7 +269,7 @@
 		});
 
 		for(let i in pcb) {
-			$("#pcb").append("<tr><td>" + pcb[i].name + "</td><td>" + pcb[i].arrival_time + "</td><td>" + pcb[i].processor_want + "</td><td>" + pcb[i].processor_used + "</td><td>" + pcb[i].io_trigger + "</td><td>" + pcb[i].io_want + "</td><td>" + pcb[i].io_used + "</td><td>0</td></tr>");
+			$("#pcb").append("<tr><td>" + pcb[i].name + "</td><td>" + pcb[i].arrival_time + "</td><td>" + pcb[i].processor_want + "</td><td>" + pcb[i].processor_used + "</td><td>" + pcb[i].io_trigger + "</td><td>" + pcb[i].io_want + "</td><td>" + pcb[i].io_used + "</td><td>" + pcb[i].system_time + "</td></tr>");
 		}
 	}
 
@@ -299,7 +302,7 @@
 			return;
 		}
 
-		if(state.lists[target].length != 0) {
+		if(state.lists[target].length != 0 && (state.settings[destination + "_limit"] == undefined || state.lists[destination].length < state.settings[destination + "_limit"])) {
 			state.lists[destination].push(state.lists[target].shift());
 		}
 	}
@@ -309,7 +312,7 @@
 			return;
 		}
 
-		while(state.lists[target].length != 0) {
+		while(state.lists[target].length != 0 && (state.settings[destination + "_limit"] == undefined || state.lists[destination].length < state.settings[destination + "_limit"])) {
 			state.lists[destination].push(state.lists[target].shift());
 		}
 	}
@@ -381,7 +384,6 @@
 			return;
 		}
 
-		console.log(JSON.stringify(state, null, 4));
 		read_settings();
 		randomly_generate_process();
 		handle();
