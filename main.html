@@ -35,6 +35,15 @@
 			background: #353433;
 		}
 
+		.rounded td, .rounded {
+			border-radius: 10px;
+		}
+
+		.merged_cells {
+			border-collapse: separate;
+			border-spacing: 0 !important;
+		}
+
 		select[multiple]:focus {
 			background-color: transparent;
 		}
@@ -47,15 +56,32 @@
 		    background: white;
 		}
 
+		.scroll::-webkit-scrollbar {
+		    width: 5px;
+		}
+
+		.scroll::-webkit-scrollbar-thumb {
+		    background: white;
+		}
+
+		.no_border {
+			margin-bottom: 0 !important;
+		}
+
 		input[type=range] {
 			width: 100%;
+		}
+
+		.container-fluid {
+			padding: 0 !important;
+			padding-right: 10px !important;
 		}
 	</style>
 </head>
 <body>
-<div class="container">
+<div class="container-fluid">
 	<div class="col-9 float-left" style="padding: 0 !important">
-		<table class="table borderless separated_cells">
+		<table class="table borderless separated_cells rounded">
 			<tr>
 				<td><center>New</center><select multiple id="new" class="form-control"></select></td>
 				<td><center>Ready</center><select multiple id="ready" class="form-control"></select></td>
@@ -69,7 +95,7 @@
 		</table>
 	</div>
 
-	<div class="col-3 float-right" style="background: #353433; color: white; padding: 10px; margin-top: 10px; height: 658px">
+	<div class="col-3 float-right" style="background: #353433; color: white; padding: 10px; margin-top: 10px; height: 658px; border-radius: 10px">
 		CPU Cycle:<div id="cpu_cycle" style="float: right">0</div><br>
 		Quantum:<div id="quantum_state" style="float: right">0</div><br>
 		Delay<div id="delay" style="float: right">1000</div><input type="range" min="0" max="2000" value="1000" step="1" oninput="update(this, 'delay')">
@@ -86,21 +112,26 @@
 	</div>
 
 	<div class="col-12 float-left" style="padding: 5px; margin-left: 5px; padding-top: 0 !important">
-		<table class="table borderless merged_cells">
-			<thead class="thead-inverse">
+		<table class="table borderless merged_cells no_border">
+			<thead>
 				<tr>
-					<th>Name</th>
-					<th>Arrival</th>
-					<th>CPU want</th>
-					<th>CPU used</th>
-					<th>I/O trigger</th>
-					<th>I/O want</th>
-					<th>I/O used</th>
-					<th>System time</th>
+					<td style="border-top-left-radius: 10px">Name</td>
+					<td>Arrival</td>
+					<td>CPU want</td>
+					<td>CPU used</td>
+					<td>I/O trigger</td>
+					<td>I/O want</td>
+					<td>I/O used</td>
+					<td style="border-top-right-radius: 10px">System time</td>
 				</tr>
 			</thead>
+		</table>
+	<div class="scroll "style="height: 260px; overflow:auto; background: #353433; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px">
+		<table class="table borderless merged_cells">
 			<tbody id="pcb">
 			</tbody>
+		</table>
+	</div>
 		</table>
 	</div>
 </div>
