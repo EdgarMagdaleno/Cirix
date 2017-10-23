@@ -126,7 +126,7 @@
 
 		CPU time average
 		<div id="cpu_time_average" style="float: right">15</div>
-		<input type="range" min="5" max="20" value="15" step="1" oninput="update(this, 'cpu_time_average'); change_io_time_slider(this);">
+		<input type="range" min="6" max="20" value="15" step="1" oninput="update(this, 'cpu_time_average'); change_io_time_slider(this);">
 
 		I/O time
 		<div id="io_time" style="float: right">10</div>
@@ -163,7 +163,10 @@
 					<td>I/O trigger</td>
 					<td>I/O want</td>
 					<td>I/O used</td>
-					<td style="border-top-right-radius: 10px">System time</td>
+					<td>Work time</td>
+					<td>Wait time</td>
+					<td>Total time</td>
+					<td style="border-top-right-radius: 10px">Performance</td>
 				</tr>
 			</thead>
 		</table>
@@ -246,6 +249,9 @@
 		this.io_used = 0;
 		this.io_trigger = io_trigger;
 		this.system_time = 0;
+		this.work_time = 0;
+		this.wait_time = 0;
+		this.total_time = 0;
 	}
 
 	set_default_settings = function() {
@@ -299,8 +305,8 @@
 
 			if(random_io_chance()) {
 				new_process.io_trigger = '-';
-				new_process.io_want = '-';
-				new_process.io_used = '-';
+				new_process.io_want = 0;
+				new_process.io_used = 0;
 			}
 			state.lists.new.push(new_process);
 			state.process_count++;
@@ -320,6 +326,11 @@
 				$("#" + key).append($("<option>", {
 					text: state.lists[key][i].name
 				}));
+
+				if(key == 'new' || key == 'ready' || key == 'io_waiting') {
+					state.lists[key][i].wait_time++;
+				}
+
 				state.lists[key][i].system_time++;
 				pcb.push(state.lists[key][i]);
 			}
@@ -337,8 +348,8 @@
 			return 0;
 		});
 
-		for(let i in pcb) {
-			$("#pcb").append("<tr><td>" + pcb[i].name + "</td><td>" + pcb[i].arrival_time + "</td><td>" + pcb[i].processor_want + "</td><td>" + pcb[i].processor_used + "</td><td>" + pcb[i].io_trigger + "</td><td>" + pcb[i].io_want + "</td><td>" + pcb[i].io_used + "</td><td>" + pcb[i].system_time + "</td></tr>");
+		for(let i in pcb) { 
+			$("#pcb").append("<tr><td>" + pcb[i].name + "</td><td>" + pcb[i].arrival_time + "</td><td>" + pcb[i].processor_want + "</td><td>" + pcb[i].processor_used + "</td><td>" + pcb[i].io_trigger + "</td><td>" + pcb[i].io_want + "</td><td>" + pcb[i].io_used + "</td><td>" + Number(pcb[i].processor_used + pcb[i].io_used) + "</td><td>" + pcb[i].wait_time + "</td><td>" + Number(pcb[i].processor_used + pcb[i].io_used +  pcb[i].wait_time) + "</td><td>" + parseFloat(pcb[i].processor_used + pcb[i].io_used) / parseFloat(pcb[i].processor_used + pcb[i].io_used +  pcb[i].wait_time) + "</td></tr>");
 		}
 	}
 
@@ -392,7 +403,6 @@
 	}
 
 	interrupt = function() {
-		move_exhaust("new", "ready");
 		if(state.lists.running.length != 0) {
 			let running_process = state.lists.running[0];
 			if(running_process.processor_used == running_process.processor_want) {
@@ -422,6 +432,8 @@
 
 		move("io_waiting", "io_using", true);
 		move("ready", "running", true);
+
+		move_exhaust("new", "ready");
 	}
 
 	reset = function() {
@@ -433,12 +445,12 @@
 			let running_process = state.lists.running[0];
 			running_process.processor_used++;
 
-			if(running_process.processor_used == running_process.processor_want) {
-				state.quantum_state = -1;
-			}
-
-			if(running_process.io_trigger == running_process.processor_used) {
-				state.quantum_state = -1;
+			if(running_process.processor_used == running_process.processor_want || running_process.io_trigger == running_process.processor_used) {
+				$("#running").empty();
+				$("#running").append($("<option>", {
+					text: "CP"
+				}));
+				state.quantum_state = -state.settings.cp_time;
 			}
 		}
 	}
