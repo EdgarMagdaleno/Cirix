@@ -36,7 +36,7 @@
 		}
 
 		.rounded td, .rounded {
-			border-radius: 10px;
+			border-radius: 10px 10px 10px 10px;
 		}
 
 		.merged_cells {
@@ -72,6 +72,12 @@
 			width: 100%;
 		}
 
+		.r {
+			margin: 0 !important;
+			padding: 0 !important;
+			float: right;
+		}
+
 		.container-fluid {
 			padding: 0 !important;
 			padding-right: 10px !important;
@@ -95,18 +101,53 @@
 		</table>
 	</div>
 
-	<div class="col-3 float-right" style="background: #353433; color: white; padding: 10px; margin-top: 10px; height: 658px; border-radius: 10px">
-		CPU Cycle:<div id="cpu_cycle" style="float: right">0</div><br>
-		Quantum:<div id="quantum_state" style="float: right">0</div><br>
-		Delay<div id="delay" style="float: right">1000</div><input type="range" min="0" max="2000" value="1000" step="1" oninput="update(this, 'delay')">
-		Luck<div id="luck" style="float: right">20</div><input type="range" min="0" max="100" value="20" step="1" oninput="update(this, 'luck')">
-		Quantum<div id="quantum_settings" style="float: right">20</div><input type="range" min="1" max="32" value="6" step="1" oninput="update(this, 'quantum_settings')">
-		CPU time<div id="cpu_time_average" style="float: right">15</div><input type="range" min="5" max="100" value="15" step="1" oninput="update(this, 'cpu_time_average'); change_io_time_slider(this);">
-		I/O time<div id="io_time_average" style="float: right">10</div><input type="range" min="5" max="20" value="10" step="1" oninput="update(this, 'io_time_average')">
-		I/O Trigger<div id="io_trigger_average" style="float: right">7</div><input id="io_trigger_slider" type="range" min="5" max="15" value="7" step="1" oninput="update(this, 'io_trigger_average')">
-		New limit<div id="new_limit" style="float: right">50</div><input type="range" min="1" max="100" value="50" step="1" oninput="update(this, 'new_limit')">
-		Ready limit<div id="ready_limit" style="float: right">50</div><input type="range" min="1" max="100" value="50" step="1" oninput="update(this, 'ready_limit')">
-		Waiting I/O limit<div id="io_waiting_limit" style="float: right">50</div><input type="range" min="1" max="100" value="50" step="1" oninput="update(this, 'io_waiting_limit')">
+	<div class="col-3 float-right" style="background: #353433; color: white; padding: 10px; margin-top: 10px; height: 658px; border-radius: 10px 10px 10px 10px">
+		CPU cycle
+		<div id="cpu_cycle" style="float: right">0</div><br>
+
+		Quantum
+		<div id="quantum_state" style="float: right">0</div><br>
+
+		Delay between cycles
+		<div class="r">&nbspms</div><div id="delay" style="float: right">500</div>
+		<input type="range" min="0" max="2000" value="500" step="1" oninput="update(this, 'delay')">
+
+		Chance of new process
+		<div class="r">%</div><div id="luck" style="float: right">20</div>
+		<input type="range" min="0" max="100" value="20" step="1" oninput="update(this, 'luck')">
+
+		Quantum
+		<div id="quantum_settings" style="float: right">6</div>
+		<input type="range" min="1" max="32" value="6" step="1" oninput="update(this, 'quantum_settings')">
+
+		CP time
+		<div id="cp_time" style="float: right">1</div>
+		<input type="range" min="1" max="5" value="1" step="1" oninput="update(this, 'cp_time')">
+
+		CPU time average
+		<div id="cpu_time_average" style="float: right">15</div>
+		<input type="range" min="5" max="20" value="15" step="1" oninput="update(this, 'cpu_time_average'); change_io_time_slider(this);">
+
+		I/O time
+		<div id="io_time" style="float: right">10</div>
+		<input type="range" min="1" max="20" value="10" step="1" oninput="update(this, 'io_time')">
+
+		I/O Trigger
+		<div id="io_trigger" style="float: right">7</div>
+		<input id="io_trigger_slider" type="range" min="1" max="14" value="7" step="1" oninput="update(this, 'io_trigger')">
+
+		I/O Chance
+		<div class="r">%</div><div id="io_chance" style="float: right">50</div><input type="range" min="0" max="100" value="50" step="1" oninput="update(this, 'io_chance')">
+
+		New limit
+		<div id="new_limit" style="float: right">50</div><input type="range" min="1" max="100" value="50" step="1" oninput="update(this, 'new_limit')">
+
+		Ready limit
+		<div id="ready_limit" style="float: right">50</div><input type="range" min="1" max="100" value="50" step="1" oninput="update(this, 'ready_limit')">
+
+		Waiting I/O limit
+		<div id="io_waiting_limit" style="float: right">50</div><input type="range" min="1" max="100" value="50" step="1" oninput="update(this, 'io_waiting_limit')">
+
 		<button onclick="pause()" id="pause">Start</button>
 		<button onclick="reset()" id="reset">Reset</button>
 	</div>
@@ -126,7 +167,7 @@
 				</tr>
 			</thead>
 		</table>
-	<div class="scroll "style="height: 260px; overflow:auto; background: #353433; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px">
+	<div class="scroll" style="height: 260px; overflow:auto; background: #353433; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px">
 		<table class="table borderless merged_cells">
 			<tbody id="pcb">
 			</tbody>
@@ -144,9 +185,9 @@
 	};
 
 	change_io_time_slider = function(change) {
-		$("#io_trigger_slider").attr('max', Number(change.value));
-		if(Number(change.value) < $("#io_trigger_average").text()) {
-			update(change, "io_trigger_average");
+		$("#io_trigger_slider").attr('max', Number(change.value) - 1);
+		if(Number(change.value) <= $("#io_trigger").text()) {
+			$("#io_trigger").text(Number(change.value) - 1);
 		}
 	}
 
@@ -180,28 +221,18 @@
 			finished : []
 		},
 		settings : {
-			delay : null,
-			quantum_settings : null,
-			luck : null,
-			cpu_time_average : null,
-			io_trigger_average : null,
-			io_time_average : null,
-			new_limit : null,
-			ready_limit : null,
-			io_waiting_limit : null
+			delay : 500,
+			quantum_settings : 6,
+			luck : 20,
+			cpu_time_average : 15,
+			io_trigger : 7,
+			io_time : 10,
+			new_limit : 50,
+			ready_limit : 50,
+			io_waiting_limit : 50,
+			cp_time : 1,
+			io_chance : 50
 		}
-	}
-
-	var default_settings = {
-		delay : 500,
-		quantum_settings : 6,
-		luck : 20,
-		cpu_time_average : 15,
-		io_trigger_average : 7,
-		io_time_average : 10,
-		new_limit : 50,
-		ready_limit : 50,
-		io_waiting_limit : 50
 	}
 
 	var ui_display_state = ["cpu_cycle", "quantum_state"];
@@ -218,8 +249,8 @@
 	}
 
 	set_default_settings = function() {
-		for(let key in default_settings) {
-			$("#" + key).text(default_settings[key]);
+		for(let key in state.settings) {
+			$("#" + key).text(state.settings[key]);
 		}
 
 		for(let key in state.settings) {
@@ -235,6 +266,10 @@
 		for(let key in ui_display_state) {
 			$("#" + ui_display_state[key]).text(state[ui_display_state[key]]);
 		}
+
+		if(state.quantum_state <= 0) {
+			$("#quantum_state").text("CP");
+		}
 	}
 
 	random_cpu_time = function() {
@@ -242,14 +277,16 @@
 		return Math.floor(time);
 	}
 
-	random_io_time = function() {
-		let time = Number(state.settings.io_time_average) + (Math.random() * 10) - 5;
-		return Math.floor(time);
+	get_io_time = function() {
+		return Number(state.settings.io_time);
 	}
 
-	random_io_trigger = function() {
-		let time = Number(state.settings.io_trigger_average) + (Math.random() * 10) - 5;
-		return Math.floor(time);
+	get_io_trigger = function() {
+		return Number(state.settings.io_trigger);
+	}
+
+	random_io_chance = function() {
+		return state.settings.io_chance < Math.random() * 100;
 	}
 
 	randomly_generate_process = function() {
@@ -258,8 +295,9 @@
 		}
 
 		if(Math.floor(Math.random() * 100) + 1 < state.settings.luck) {
-			let new_process = new user_process(get_name(), state.cpu_cycle, random_cpu_time(), random_io_time(), random_io_trigger());
-			if(Number(new_process.io_trigger) == 0 || Number(new_process.io_time) == 0) {
+			let new_process = new user_process(get_name(), state.cpu_cycle, random_cpu_time(), get_io_time(), get_io_trigger());
+
+			if(random_io_chance()) {
 				new_process.io_trigger = '-';
 				new_process.io_want = '-';
 				new_process.io_used = '-';
@@ -318,7 +356,12 @@
 
 		state.quantum_state++;
 		if(state.quantum_state > state.settings.quantum_settings) {
-			state.quantum_state = 0;
+			$("#running").empty();
+			$("#running").append($("<option>", {
+				text: "CP"
+			}));
+
+			state.quantum_state = 1 - state.settings.cp_time;
 		}
 
 		if(state.lists.io_using.length != 0) {
@@ -397,7 +440,6 @@
 			if(running_process.io_trigger == running_process.processor_used) {
 				state.quantum_state = -1;
 			}
-
 		}
 	}
 
@@ -415,10 +457,20 @@
 			return;
 		}
 
+		if(state.quantum_state == 1) {
+			refresh_lists();
+		}
+
 		read_settings();
-		randomly_generate_process();
-		handle();
-		refresh_lists();
+
+		if(state.quantum_state >= 0) {
+			randomly_generate_process();
+			handle();
+		}
+
+		if(state.quantum_state > 0) {
+			refresh_lists();
+		}
 
 		tick();
 		if(!state.paused) {
